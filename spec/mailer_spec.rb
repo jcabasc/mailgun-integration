@@ -25,4 +25,30 @@ describe Mailer do
       it { expect(subject.send_message).to eq(sent_message) }
     end
   end
+
+
+  describe "#list_of_emails_sent_to" do
+    subject do
+      described_class.new(recipient, "Hey", "Hi")
+    end
+    let(:recipient) { "user@mailguntest.com" }
+    context "when there are emails" do
+      before do
+        Mailer.any_instance.stub(:search_for_emails_sent_to).with(recipient) { successful_list_of_emails_sent }
+      end
+      it { expect(subject.list_of_emails_sent_to(recipient)).to eq(expected_response) }
+    end
+
+    context "when there aren't emails" do
+      before do
+        Mailer.any_instance.stub(:search_for_emails_sent_to).with(recipient) { empty_list_of_emails_sent }
+      end
+      it { expect(subject.list_of_emails_sent_to(recipient)).to eq({}) }
+
+    end
+  end
+
+  def expected_response
+    {"user@mailguntest.com"=>[{:message_id=>"20160613013837.81381.17709.1D2FF971@sandbox5b33d3b7058543a29bac9432fcdb9756.mailgun.org", :subject=>"Subject test"}]}
+  end
 end

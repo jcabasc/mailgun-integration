@@ -24,8 +24,23 @@ module Requester
     RestClient.get "https://api:#{Requester::API_KEY}"\
       "@api.mailgun.net/v3/#{Requester::DOMAIN}/events",
       :params => {
-        :'recipient' => recipient
+        :'recipient' => recipient,
+        :'event' => 'delivered'
       }
+  end
+
+  def list_of_emails_sent_to(recipient)
+    events = search_for_emails_sent_to(recipient)
+    events_hsh = JSON.parse(events)
+    return {} if events_hsh["items"].empty?
+    {}.tap do |hsh|
+      hsh[recipient] = events_hsh["items"].map do |event|
+        {
+          message_id: event["message"]["headers"]["message-id"],
+          subject: event["message"]["headers"]["subject"]
+        }
+      end
+    end
   end
 
   def get_email_blacklist(type)
