@@ -9,7 +9,7 @@ class SuppressionList
       struct = self.get_email_blacklist(type)
       hsh = JSON.parse(struct)
       hsh["items"].map{|x| x["address"]}
-    end.flatten.uniq
+    end.flatten.uniq #a single email could be in several lists
   end
 
   def self.include?(email)

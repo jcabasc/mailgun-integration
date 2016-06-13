@@ -11,3 +11,9 @@ How the webhook works?
 
 `clicked` events are being tracked when click a link on the email
 
+
+You may run tests by running `rake` or `rspec`
+
+If you want to give it a try in `irb`:
+
+`bundle install` first and don't forget to require `./mailer` and `./suppression_list`

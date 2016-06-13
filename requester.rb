@@ -2,10 +2,15 @@ require 'mailgun'
 require 'pry'
 module Requester
 
+  #if not provide, this is the dev API key for my account
   API_KEY = "key-2688a747e654a09456a9a8151f09ceee"
+  #if not provide, this is the sandbox domain for my account
   DOMAIN = "sandbox5b33d3b7058543a29bac9432fcdb9756.mailgun.org"
   DEFAULT_SENDER = "Jonathan <jonathan.cabas@sandbox5b33d3b7058543a29bac9432fcdb9756.mailgun.org>"
 
+
+  #Like to preserve all calls to the API in a single file
+  #Assume that Mailgun API v3 is stable and won't change in the near future
   def send_message
     send unless SuppressionList.include?(receiver)
   end
@@ -51,6 +56,7 @@ module Requester
       hsh["o:tracking"] = true
     end
   end
+  #html is necessary in order to track the opened and clicked event
 
   def link
     "<a href='http://www.mailgun.com/'>Mailgun</a>"

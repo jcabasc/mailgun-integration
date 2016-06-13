@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Mailer do
   describe "send_message" do
     before do
+      #Third party calls are being stub, no need to hit the endpoints
       SuppressionList.stub(:get_email_blacklist).with("bounces").and_return(bounces_response)
       SuppressionList.stub(:get_email_blacklist).with("unsubscribes").and_return(unsubscribes_response)
       SuppressionList.stub(:get_email_blacklist).with("complaints").and_return(complaints_response)
@@ -11,13 +12,15 @@ describe Mailer do
     subject do
       described_class.new(recipient, "Hey", "Hi")
     end
-
+    #By testing this method, I'm assuming that this email is included in at least one of these lists 'bounces', 'complaints', 'unsubscribes'
+    #Since I am stubbing the response, these are pre-defined in the support file
+    #No need to test the SuppressionList class since I am testing the integration with this one
     context "whem email is in the suppression_list" do
       let(:recipient) { "complaint@mailguntest.com" }
       it { expect(subject.send_message).to eq(nil) }
     end
 
-
+    #By testing this method, I'm assuming that this email is not included in any of these lists 'bounces', 'complaints', 'unsubscribes'
     context "whem email is not in the suppression_list" do
       before { Mailer.any_instance.stub(:send) { sent_message } }
 
