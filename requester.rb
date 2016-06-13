@@ -10,16 +10,6 @@ module Requester
     send unless SuppressionList.include?(receiver)
   end
 
-  def send
-    RestClient.post "https://api:#{Requester::API_KEY}"\
-      "@api.mailgun.net/v3/#{Requester::DOMAIN}/messages",
-      :from => sender,
-      :to => receiver,
-      :subject => subject,
-      :text => text,
-      "o:campaign" => campaign_id
-  end
-
   def search_for_emails_sent_to(recipient)
     RestClient.get "https://api:#{Requester::API_KEY}"\
       "@api.mailgun.net/v3/#{Requester::DOMAIN}/events",
@@ -46,5 +36,28 @@ module Requester
   def get_email_blacklist(type)
     RestClient.get "https://api:#{Requester::API_KEY}"\
       "@api.mailgun.net/v3/#{Requester::DOMAIN}/#{type}"
+  end
+
+  private
+
+  def data
+    {}.tap do |hsh|
+      hsh[:from] = sender
+      hsh[:to] = receiver
+      hsh[:subject] = subject
+      hsh[:text] = "Testing some Mailgun awesomness!"
+      hsh[:html] = "<html>#{text}<br><br>Sent via #{link}</html>"
+      hsh["o:campaign"] = campaign_id
+      hsh["o:tracking"] = true
+    end
+  end
+
+  def link
+    "<a href='http://www.mailgun.com/'>Mailgun</a>"
+  end
+
+  def send
+    RestClient.post "https://api:#{Requester::API_KEY}"\
+      "@api.mailgun.net/v3/#{Requester::DOMAIN}/messages", data
   end
 end
